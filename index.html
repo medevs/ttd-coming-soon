@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TalkTheDoc - Coming Soon</title>
+    <meta name="description" content="TalkTheDoc - Revolutionary voice-enabled document Q&A platform. Currently in development.">
+    <meta name="keywords" content="AI, voice, documents, chat, PDF, Q&A, artificial intelligence">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%236366f1;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%2306b6d4;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='20' fill='url(%23grad)'/%3E%3Cpath d='M25 30h50v40H25z' fill='white' opacity='0.9'/%3E%3Ccircle cx='75' cy='25' r='8' fill='white' opacity='0.9'/%3E%3Cpath d='M67 25h16M67 28h16M67 31h16' stroke='white' stroke-width='2' opacity='0.7'/%3E%3C/svg%3E">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #533483 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Animated background elements */
+        .bg-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .floating-shape {
+            position: absolute;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
+            border-radius: 50%;
+            animation: float-around 20s infinite linear;
+        }
+
+        .floating-shape:nth-child(1) {
+            width: 100px;
+            height: 100px;
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-shape:nth-child(2) {
+            width: 150px;
+            height: 150px;
+            top: 60%;
+            right: 15%;
+            animation-delay: -5s;
+        }
+
+        .floating-shape:nth-child(3) {
+            width: 80px;
+            height: 80px;
+            bottom: 30%;
+            left: 20%;
+            animation-delay: -10s;
+        }
+
+        .floating-shape:nth-child(4) {
+            width: 120px;
+            height: 120px;
+            top: 10%;
+            right: 30%;
+            animation-delay: -15s;
+        }
+
+        .container {
+            text-align: center;
+            padding: 2rem;
+            max-width: 900px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-container {
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .logo {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+            position: relative;
+            animation: logo-float 4s ease-in-out infinite;
+        }
+
+        .logo-bg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 220px;
+            height: 220px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(6, 182, 212, 0.2) 100%);
+            border-radius: 50%;
+            animation: pulse-glow 3s ease-in-out infinite;
+        }
+
+        .logo-image {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9ImRvY0dyYWQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgo8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNjM2NmYxO3N0b3Atb3BhY2l0eToxIiAvPgo8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwNmI2ZDQ7c3RvcC1vcGFjaXR5OjEiIC8+CjwvbGluZWFyR3JhZGllbnQ+CjxsaW5lYXJHcmFkaWVudCBpZD0iY2hhdEdyYWQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgo8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNjM2NmYxO3N0b3Atb3BhY2l0eToxIiAvPgo8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwNmI2ZDQ7c3RvcC1vcGFjaXR5OjEiIC8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KCjwhLS0gRG9jdW1lbnQgU3RhY2sgLS0+CjxyZWN0IHg9IjgwIiB5PSI2MCIgd2lkdGg9IjE4MCIgaGVpZ2h0PSIyNDAiIHJ4PSIyNCIgZmlsbD0idXJsKCNkb2NHcmFkKSIgb3BhY2l0eT0iMC44Ii8+CjxyZWN0IHg9IjEwMCIgeT0iODAiIHdpZHRoPSIxODAiIGhlaWdodD0iMjQwIiByeD0iMjQiIGZpbGw9InVybCgjZG9jR3JhZCkiIG9wYWNpdHk9IjAuOSIvPgo8cmVjdCB4PSIxMjAiIHk9IjEwMCIgd2lkdGg9IjE4MCIgaGVpZ2h0PSIyNDAiIHJ4PSIyNCIgZmlsbD0idXJsKCNkb2NHcmFkKSIvPgoKPCEtLSBEb2N1bWVudCBDb250ZW50IExpbmVzIC0tPgo8cmVjdCB4PSIxNDAiIHk9IjEzMCIgd2lkdGg9IjEyMCIgaGVpZ2h0PSI4IiByeD0iNCIgZmlsbD0id2hpdGUiIG9wYWNpdHk9IjAuOCIvPgo8cmVjdCB4PSIxNDAiIHk9IjE1MCIgd2lkdGg9IjE0MCIgaGVpZ2h0PSI4IiByeD0iNCIgZmlsbD0id2hpdGUiIG9wYWNpdHk9IjAuOCIvPgo8cmVjdCB4PSIxNDAiIHk9IjE3MCIgd2lkdGg9IjEwMCIgaGVpZ2h0PSI4IiByeD0iNCIgZmlsbD0id2hpdGUiIG9wYWNpdHk9IjAuOCIvPgo8cmVjdCB4PSIxNDAiIHk9IjE5MCIgd2lkdGg9IjEzMCIgaGVpZ2h0PSI4IiByeD0iNCIgZmlsbD0id2hpdGUiIG9wYWNpdHk9IjAuOCIvPgoKPCEtLSBDaGF0IEJ1YmJsZSAtLT4KPHBhdGggZD0iTTIwMCAyNDBDMjAwIDIyMC4xIDIxNi4xIDIwNCAyMzYgMjA0SDMxNkMzMzUuOSAyMDQgMzUyIDIyMC4xIDM1MiAyNDBWMjgwQzM1MiAyOTkuOSAzMzUuOSAzMTYgMzE2IDMxNkgyNjBMMjM2IDMzNkwyMTIgMzE2SDIzNkMyMTYuMSAzMTYgMjAwIDI5OS45IDIwMCAyODBWMjQwWiIgZmlsbD0idXJsKCNjaGF0R3JhZCkiLz4KCjwhLS0gU291bmQgV2F2ZXMgLS0+CjxyZWN0IHg9IjIzMCIgeT0iMjUwIiB3aWR0aD0iOCIgaGVpZ2h0PSIzMCIgcng9IjQiIGZpbGw9IndoaXRlIiBvcGFjaXR5PSIwLjkiPgo8YW5pbWF0ZSBhdHRyaWJ1dGVOYW1lPSJoZWlnaHQiIHZhbHVlcz0iMzA7MTU7MzA7MjA7MzAiIGR1cj0iMS41cyIgcmVwZWF0Q291bnQ9ImluZGVmaW5pdGUiLz4KPC9yZWN0Pgo8cmVjdCB4PSIyNDUiIHk9IjI0NSIgd2lkdGg9IjgiIGhlaWdodD0iNDAiIHJ4PSI0IiBmaWxsPSJ3aGl0ZSIgb3BhY2l0eT0iMC45Ij4KPGFuaW1hdGUgYXR0cmlidXRlTmFtZT0iaGVpZ2h0IiB2YWx1ZXM9IjQwOzIwOzQwOzEwOzQwIiBkdXI9IjEuNXMiIHJlcGVhdENvdW50PSJpbmRlZmluaXRlIiBiZWdpbj0iMC4ycyIvPgo8L3JlY3Q+CjxyZWN0IHg9IjI2MCIgeT0iMjQwIiB3aWR0aD0iOCIgaGVpZ2h0PSI1MCIgcng9IjQiIGZpbGw9IndoaXRlIiBvcGFjaXR5PSIwLjkiPgo8YW5pbWF0ZSBhdHRyaWJ1dGVOYW1lPSJoZWlnaHQiIHZhbHVlcz0iNTA7MjU7NTA7MTU7NTAiIGR1cj0iMS41cyIgcmVwZWF0Q291bnQ9ImluZGVmaW5pdGUiIGJlZ2luPSIwLjRzIi8+CjwvcmVjdD4KPHJlY3QgeD0iMjc1IiB5PSIyNDgiIHdpZHRoPSI4IiBoZWlnaHQ9IjM1IiByeD0iNCIgZmlsbD0id2hpdGUiIG9wYWNpdHk9IjAuOSI+CjxhbmltYXRlIGF0dHJpYnV0ZU5hbWU9ImhlaWdodCIgdmFsdWVzPSIzNTsyMDszNTsxMjszNSIgZHVyPSIxLjVzIiByZXBlYXRDb3VudD0iaW5kZWZpbml0ZSIgYmVnaW49IjAuNnMiLz4KPC9yZWN0Pgo8cmVjdCB4PSIyOTAiIHk9IjI1NSIgd2lkdGg9IjgiIGhlaWdodD0iMjAiIHJ4PSI0IiBmaWxsPSJ3aGl0ZSIgb3BhY2l0eT0iMC45Ij4KPGFuaW1hdGUgYXR0cmlidXRlTmFtZT0iaGVpZ2h0IiB2YWx1ZXM9IjIwOzEwOzIwOzU7MjAiIGR1cj0iMS41cyIgcmVwZWF0Q291bnQ9ImluZGVmaW5pdGUiIGJlZ2luPSIwLjhzIi8+CjwvcmVjdD4KPHJlY3QgeD0iMzA1IiB5PSIyNTIiIHdpZHRoPSI4IiBoZWlnaHQ9IjI1IiByeD0iNCIgZmlsbD0id2hpdGUiIG9wYWNpdHk9IjAuOSI+CjxhbmltYXRlIGF0dHJpYnV0ZU5hbWU9ImhlaWdodCIgdmFsdWVzPSIyNTsxNTsyNTs4OzI1IiBkdXI9IjEuNXMiIHJlcGVhdENvdW50PSJpbmRlZmluaXRlIiBiZWdpbj0iMXMiLz4KPC9yZWN0Pgo8L3N2Zz4=') center/contain no-repeat;
+            filter: drop-shadow(0 10px 30px rgba(99, 102, 241, 0.3));
+            animation: logo-glow 2s ease-in-out infinite alternate;
+        }
+
+        .brand-text {
+            margin-top: 2rem;
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 50%, #ffffff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+            animation: text-shimmer 3s ease-in-out infinite;
+            letter-spacing: -0.02em;
+        }
+
+        .domain {
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 600;
+        }
+
+        .status-container {
+            margin: 3rem 0;
+            position: relative;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            color: white;
+            font-weight: 600;
+            animation: badge-pulse 2s ease-in-out infinite;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+            border-radius: 50%;
+            animation: dot-pulse 1.5s ease-in-out infinite;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+        }
+
+        .tagline {
+            font-size: 1.8rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 2rem;
+            font-weight: 300;
+            line-height: 1.6;
+            animation: fade-in-up 1s ease-out 0.5s both;
+        }
+
+        .description {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 3rem;
+            line-height: 1.8;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: fade-in-up 1s ease-out 0.7s both;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+            animation: fade-in-up 1s ease-out 0.9s both;
+        }
+
+        .feature {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .feature:hover::before {
+            left: 100%;
+        }
+
+        .feature:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            animation: icon-bounce 2s ease-in-out infinite;
+        }
+
+        .feature:nth-child(2) .feature-icon {
+            animation-delay: 0.2s;
+        }
+
+        .feature:nth-child(3) .feature-icon {
+            animation-delay: 0.4s;
+        }
+
+        .feature h3 {
+            color: white;
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .feature p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .progress-container {
+            margin: 3rem 0;
+            animation: fade-in-up 1s ease-out 1.1s both;
+        }
+
+        .progress-text {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1 0%, #06b6d4 100%);
+            border-radius: 10px;
+            width: 0%;
+            animation: progress-load 3s ease-out 1.5s forwards;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: progress-shine 2s ease-in-out infinite;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 3rem;
+            animation: fade-in-up 1s ease-out 1.3s both;
+        }
+
+        .social-link {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            font-size: 1.8rem;
+            transition: all 0.4s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .social-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.3) 0%, rgba(6, 182, 212, 0.3) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .social-link:hover::before {
+            opacity: 1;
+        }
+
+        .social-link:hover {
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 15px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .footer {
+            margin-top: 4rem;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+            animation: fade-in-up 1s ease-out 1.5s both;
+        }
+
+        /* Animations */
+        @keyframes float-around {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(30px, -30px) rotate(90deg); }
+            50% { transform: translate(-20px, -60px) rotate(180deg); }
+            75% { transform: translate(-50px, -30px) rotate(270deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+
+        @keyframes logo-float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(2deg); }
+        }
+
+        @keyframes pulse-glow {
+            0% { 
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.3;
+            }
+            100% { 
+                transform: translate(-50%, -50%) scale(1.1);
+                opacity: 0.1;
+            }
+        }
+
+        @keyframes logo-glow {
+            0% { filter: drop-shadow(0 10px 30px rgba(99, 102, 241, 0.3)); }
+            100% { filter: drop-shadow(0 15px 40px rgba(6, 182, 212, 0.4)); }
+        }
+
+        @keyframes text-shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+
+        @keyframes badge-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes dot-pulse {
+            0%, 100% { 
+                transform: scale(1);
+                box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+            }
+            50% { 
+                transform: scale(1.2);
+                box-shadow: 0 0 30px rgba(16, 185, 129, 0.8);
+            }
+        }
+
+        @keyframes fade-in-up {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes icon-bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes progress-load {
+            from { width: 0%; }
+            to { width: 75%; }
+        }
+
+        @keyframes progress-shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .brand-text {
+                font-size: 2.5rem;
+            }
+            
+            .tagline {
+                font-size: 1.4rem;
+            }
+            
+            .description {
+                font-size: 1rem;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+
+            .logo {
+                width: 150px;
+                height: 150px;
+            }
+
+            .logo-bg {
+                width: 170px;
+                height: 170px;
+            }
+        }
+
+        /* Particle system */
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: particle-float 6s linear infinite;
+        }
+
+        @keyframes particle-float {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) scale(1);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation">
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+    </div>
+
+    <div class="container">
+        <div class="logo-container">
+            <div class="logo">
+                <div class="logo-bg"></div>
+                <div class="logo-image"></div>
+            </div>
+            <div class="brand-text">
+                TalkTheDoc<span class="domain">.com</span>
+            </div>
+        </div>
+
+        <div class="status-container">
+            <div class="status-badge">
+                <div class="status-dot"></div>
+                Currently in Development
+            </div>
+        </div>
+        
+        <p class="tagline">Revolutionary Voice-Enabled Document Q&A</p>
+        <p class="description">
+            We're building the future of document interaction. Upload your files and have natural conversations 
+            with them using advanced AI. Ask questions, get insights, and interact with your documents like never before - 
+            all through voice or text.
+        </p>
+
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">🎤</div>
+                <h3>Voice Conversations</h3>
+                <p>Talk to your documents naturally with real-time voice interaction and instant AI-powered responses.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📄</div>
+                <h3>Smart Document Analysis</h3>
+                <p>Upload PDFs, Word docs, and more. Our AI understands and analyzes your content instantly.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🧠</div>
+                <h3>Intelligent Insights</h3>
+                <p>Get summaries, ask complex questions, and discover insights hidden in your documents.</p>
+            </div>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-text">Development Progress</div>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+        </div>
+
+        <div class="social-links">
+            <a href="#" class="social-link" title="Twitter">🐦</a>
+            <a href="#" class="social-link" title="LinkedIn">💼</a>
+            <a href="#" class="social-link" title="GitHub">⚡</a>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2025 TalkTheDoc. Revolutionizing document interaction with AI.</p>
+            <p>Coming Soon - Stay Tuned!</p>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced particle system
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            
+            const size = Math.random() * 4 + 2;
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            particle.style.left = Math.random() * window.innerWidth + 'px';
+            particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+            particle.style.animationDelay = Math.random() * 2 + 's';
+            
+            document.body.appendChild(particle);
+            
+            setTimeout(() => {
+                particle.remove();
+            }, 8000);
+        }
+
+        // Create particles periodically
+        setInterval(createParticle, 200);
+
+        // Add mouse interaction
+        document.addEventListener('mousemove', (e) => {
+            const cursor = document.createElement('div');
+            cursor.style.position = 'fixed';
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+            cursor.style.width = '6px';
+            cursor.style.height = '6px';
+            cursor.style.background = 'rgba(99, 102, 241, 0.6)';
+            cursor.style.borderRadius = '50%';
+            cursor.style.pointerEvents = 'none';
+            cursor.style.zIndex = '9999';
+            cursor.style.animation = 'particle-float 1s ease-out forwards';
+            
+            document.body.appendChild(cursor);
+            
+            setTimeout(() => cursor.remove(), 1000);
+        });
+
+        // Add loading animation on page load
+        window.addEventListener('load', () => {
+            document.body.style.animation = 'fade-in-up 1s ease-out';
+        });
+    </script>
+</body>
+</html>
+
